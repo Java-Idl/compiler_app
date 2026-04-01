@@ -158,4 +158,4 @@ This project is open source. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Developed as part of the Advanced Topics in Compiler Design (ATCD) lab at Amrita University.
+Developed as part of the Automata Theory and Compiler Design (ATCD) lab at Amrita University.

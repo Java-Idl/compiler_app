@@ -39,6 +39,96 @@ interface CpuState {
   memory: Record<string, number>;
 }
 
+interface Toast {
+  id: string;
+  message: string;
+  type: "success" | "info" | "warning" | "error";
+}
+
+// ─── Utility: Copy to Clipboard ────────────────────────────────────────────────
+async function copyToClipboard(text: string, onToast: (msg: string) => void) {
+  try {
+    await navigator.clipboard.writeText(text);
+    onToast("Copied to clipboard!");
+  } catch (err) {
+    onToast("Failed to copy");
+  }
+}
+
+// ─── Toast Component ──────────────────────────────────────────────────────────
+function Toast({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onRemove, 3000);
+    return () => clearTimeout(timer);
+  }, [onRemove]);
+
+  const bgColor = {
+    success: "bg-emerald-50 border-emerald-200",
+    info: "bg-blue-50 border-blue-200",
+    warning: "bg-amber-50 border-amber-200",
+    error: "bg-red-50 border-red-200",
+  }[toast.type];
+
+  const textColor = {
+    success: "text-emerald-700",
+    info: "text-blue-700",
+    warning: "text-amber-700",
+    error: "text-red-700",
+  }[toast.type];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className={`fixed top-4 right-4 border rounded-lg px-4 py-2 text-[11px] font-black uppercase tracking-widest z-50 ${bgColor} ${textColor}`}
+    >
+      {toast.message}
+    </motion.div>
+  );
+}
+
+// ─── Copy Button Component ────────────────────────────────────────────────────
+function CopyButton({ text, label, onToast }: { text: string; label: string; onToast: (msg: string) => void }) {
+  return (
+    <button
+      onClick={() => copyToClipboard(text, onToast)}
+      title={`Copy ${label}`}
+      className="text-[9px] font-black uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 px-2 py-1 rounded transition-colors outline-none focus-visible:ring-1 focus-visible:ring-slate-300"
+    >
+      📋 Copy
+    </button>
+  );
+}
+
+// ─── Code Statistics ──────────────────────────────────────────────────────────
+interface CodeStats {
+  lines: number;
+  characters: number;
+  totalTokens: number;
+  totalInstructions: number;
+  optimizationRatio: string;
+}
+
+function calculateCodeStats(code: string, result: PipelineResult | null): CodeStats {
+  const lines = code.split("\n").length;
+  const characters = code.length;
+  const totalTokens = result?.tokens.length ?? 0;
+  const tacCount = result?.tac.length ?? 0;
+  const optCount = result?.optimized_tac.length ?? 0;
+  const machineCount = result?.machine_code.length ?? 0;
+  
+  const ratio = tacCount > 0 ? (((tacCount - optCount) / tacCount) * 100).toFixed(1) : "0.0";
+
+  return {
+    lines,
+    characters,
+    totalTokens,
+    totalInstructions: machineCount,
+    optimizationRatio: ratio,
+  };
+}
+
 // ─── Chevron Icon ─────────────────────────────────────────────────────────────
 const Chevron = ({ open }: { open: boolean }) => (
   <svg
@@ -320,7 +410,7 @@ function PresetManager({
 
 // ─── Phase Panel ──────────────────────────────────────────────────────────────
 function PhasePanel({
-  phase, collapsed, result, isCompiling, pc, onToggleCollapse, onHide, onMachineRowClick, cpuState, onStepCPU, onResetCPU
+  phase, collapsed, result, isCompiling, pc, onToggleCollapse, onHide, onMachineRowClick, cpuState, onStepCPU, onResetCPU, onShowToast
 }: {
   phase: typeof PHASES[number];
   collapsed: boolean;
@@ -333,6 +423,7 @@ function PhasePanel({
   cpuState: CpuState | null;
   onStepCPU: () => void;
   onResetCPU: () => void;
+  onShowToast: (message: string, type?: "success" | "info" | "warning" | "error") => void;
 }) {
   const id = phase.id;
   const badgeText = id === "lexical" && result ? `${result.tokens.length} tokens` : phase.sublabel;
@@ -405,7 +496,14 @@ function PhasePanel({
                   </div>
 
                   <div>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Token Stream</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Token Stream</p>
+                      <CopyButton
+                        text={result.tokens.join(" ")}
+                        onToast={() => onShowToast("Tokens copied", "success")}
+                        label="Copy all tokens"
+                      />
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       {result.tokens.map((tok, i) => (
                         <div key={i} className="bg-white border border-slate-200 rounded-lg px-3 py-2 hover:border-slate-300 transition-colors">
@@ -445,17 +543,33 @@ function PhasePanel({
 
               {/* ④ TAC + ⑤ Optimized */}
               {(id === "tac" || id === "optimized") && (
-                <div className="divide-y divide-slate-100">
-                  {(id === "tac" ? result.tac : result.optimized_tac).map((t, i) => (
-                    <div key={i} className="flex items-center gap-4 px-4 py-2.5 font-mono hover:bg-slate-50 transition-colors">
-                      <span className="text-slate-300 text-[10px] font-bold w-6">{i.toString().padStart(2, "0")}</span>
-                      <span className="text-emerald-600 font-bold text-[11px]">{t.result}</span>
-                      <span className="text-slate-400 text-[11px]">=</span>
-                      <span className="text-slate-700 text-[11px]">{t.arg1}</span>
-                      {t.op && <span className={`font-black text-[11px] ${id === "tac" ? "text-[#A31241]" : "text-slate-400"}`}>{t.op}</span>}
-                      {t.arg2 && <span className="text-slate-700 text-[11px]">{t.arg2}</span>}
+                <div className="p-4 flex flex-col gap-4">
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
+                        {id === "tac" ? "Three-Address Code" : "Optimized TAC"}
+                      </p>
+                      <CopyButton
+                        text={(id === "tac" ? result.tac : result.optimized_tac)
+                          .map((t, i) => `${i.toString().padStart(2, "0")}: ${t.result} = ${t.arg1}${t.op ? ` ${t.op}${t.arg2 ? ` ${t.arg2}` : ""}` : ""}`)
+                          .join("\n")}
+                        onToast={() => onShowToast(id === "tac" ? "TAC copied" : "Optimized TAC copied", "success")}
+                        label={`Copy ${id === "tac" ? "TAC" : "optimized"}`}
+                      />
                     </div>
-                  ))}
+                    <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+                      {(id === "tac" ? result.tac : result.optimized_tac).map((t, i) => (
+                        <div key={i} className="flex items-center gap-4 px-4 py-2.5 font-mono hover:bg-slate-50 transition-colors">
+                          <span className="text-slate-300 text-[10px] font-bold w-6">{i.toString().padStart(2, "0")}</span>
+                          <span className="text-emerald-600 font-bold text-[11px]">{t.result}</span>
+                          <span className="text-slate-400 text-[11px]">=</span>
+                          <span className="text-slate-700 text-[11px]">{t.arg1}</span>
+                          {t.op && <span className={`font-black text-[11px] ${id === "tac" ? "text-[#A31241]" : "text-slate-400"}`}>{t.op}</span>}
+                          {t.arg2 && <span className="text-slate-700 text-[11px]">{t.arg2}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -464,7 +578,16 @@ function PhasePanel({
                 <div className="p-4 flex flex-col gap-4">
                   {/* Compiler Assignments Table */}
                   <div>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Compiler Symbol Table</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Compiler Symbol Table</p>
+                      <CopyButton
+                        text={Object.entries(result.assignments)
+                          .map(([name, value]) => `${name} = ${value} (0x${value.toString(16).padStart(2, "0").toUpperCase()})`)
+                          .join("\n")}
+                        onToast={() => onShowToast("Symbol table copied", "success")}
+                        label="Copy assignments"
+                      />
+                    </div>
                     <div className="rounded-lg border border-slate-200 overflow-hidden">
                       <div className="bg-slate-50 border-b border-slate-200 grid grid-cols-2 gap-0">
                         <div className="px-4 py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest border-r border-slate-200">
@@ -495,7 +618,16 @@ function PhasePanel({
 
                   {/* Machine Code Instructions */}
                   <div>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Machine Code Instructions</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Machine Code Instructions</p>
+                      <CopyButton
+                        text={result.machine_code
+                          .map((m, i) => `0x${i.toString(16).padStart(2, "0").toUpperCase()}: ${m.opcode} ${m.instruction.replace(m.opcode, "").trim()} (${m.binary})`)
+                          .join("\n")}
+                        onToast={() => onShowToast("Machine code copied", "success")}
+                        label="Copy instructions"
+                      />
+                    </div>
                     <div className="divide-y divide-slate-100">
                       {result.machine_code.map((m, i) => (
                         <div
@@ -607,12 +739,36 @@ export default function App() {
   const [compileError, setCompileError] = useState<string | null>(null);
   const [pc, setPc] = useState(0);
   const [isCompiling, setIsCompiling] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const [visiblePhases, setVisiblePhases] = useState<Set<string>>(
     new Set(PHASES.map(p => p.id))
   );
   const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
   const [langRefOpen, setLangRefOpen] = useState(true);
+
+  // Toast dispatcher
+  function showToast(message: string, type: "success" | "info" | "warning" | "error" = "info") {
+    const id = Math.random().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  }
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        compile();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+        e.preventDefault();
+        setCode("");
+        showToast("Code cleared", "info");
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [code]);
 
   function toggleVisible(id: string) {
     setVisiblePhases(prev => {
@@ -639,19 +795,48 @@ export default function App() {
       setResult(res);
       setCompileError(res.error ?? null);
       setPc(0);
+      if (!res.error) {
+        showToast("Compilation successful ✓", "success");
+      }
     } catch (e: unknown) {
       setCompileError(e instanceof Error ? e.message : String(e));
+      showToast("Compilation failed", "error");
     } finally {
       setIsCompiling(false);
     }
   }
 
   const cpuState = result && pc > 0 ? result.machine_code[pc - 1]?.cpu_state ?? null : null;
-
+  const stats = calculateCodeStats(code, result);
   const visibleList = PHASES.filter(p => visiblePhases.has(p.id));
 
   return (
     <div className="flex flex-col h-screen w-full bg-slate-100 text-slate-900 font-sans overflow-hidden">
+
+      {/* ── TOAST NOTIFICATIONS ─────────────────────────────────────────── */}
+      <AnimatePresence initial={false}>
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 pointer-events-none z-50">
+          {toasts.map((toast, idx) => (
+            <motion.div
+              key={toast.id}
+              layout
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              onAnimationComplete={() => {
+                if (idx === toasts.length - 1) {
+                  setTimeout(() => {
+                    setToasts(prev => prev.filter(t => t.id !== toast.id));
+                  }, 3000);
+                }
+              }}
+            >
+              <Toast toast={toast} onRemove={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} />
+            </motion.div>
+          ))}
+        </div>
+      </AnimatePresence>
 
       {/* ── TOP TOOLBAR ──────────────────────────────────────────────────── */}
       <header className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 shrink-0 shadow-sm z-20">
@@ -735,6 +920,32 @@ export default function App() {
               aria-label="Source code editor"
             />
           </div>
+          
+          {/* Code Statistics */}
+          <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 shrink-0">
+            <div className="grid grid-cols-2 gap-2 text-[9px]">
+              <div className="bg-white rounded px-2 py-1.5 border border-slate-200">
+                <span className="text-slate-400 font-bold uppercase tracking-widest block">Lines</span>
+                <span className="font-black text-slate-800 text-lg leading-none mt-0.5">{stats.lines}</span>
+              </div>
+              {result && (
+                <>
+                  <div className="bg-white rounded px-2 py-1.5 border border-slate-200">
+                    <span className="text-slate-400 font-bold uppercase tracking-widest block">Tokens</span>
+                    <span className="font-black text-slate-800 text-lg leading-none mt-0.5">{stats.totalTokens}</span>
+                  </div>
+                  <div className="bg-white rounded px-2 py-1.5 border border-slate-200">
+                    <span className="text-slate-400 font-bold uppercase tracking-widest block">TAC</span>
+                    <span className="font-black text-slate-800 text-lg leading-none mt-0.5">{result.tac.length}</span>
+                  </div>
+                  <div className="bg-white rounded px-2 py-1.5 border border-slate-200">
+                    <span className="text-slate-400 font-bold uppercase tracking-widest block">Machine</span>
+                    <span className="font-black text-slate-800 text-lg leading-none mt-0.5">{stats.totalInstructions}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* ─ SIDEBAR: Phase Toggle Navigator ─ */}
@@ -808,6 +1019,7 @@ export default function App() {
                   cpuState={cpuState}
                   onStepCPU={() => { if (result && pc < result.machine_code.length) setPc(p => p + 1); }}
                   onResetCPU={() => setPc(0)}
+                  onShowToast={showToast}
                 />
               </motion.div>
             ))}

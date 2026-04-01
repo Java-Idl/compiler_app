@@ -70,12 +70,23 @@ The output will be placed in `src-tauri/target/release/`.
 1. Write JL code in the left editor pane. The code editor shows line numbers.
 2. Click the **Run Pipeline** button in the top toolbar.
 3. The compiler processes the code through all phases. Results appear in the panels on the right.
-4. Use the sidebar buttons (① through ⚙) to show or hide each phase panel.
+4. Use the sidebar phase icons to show or hide each phase panel.
 5. Click the arrow (▶) in each panel header to collapse or expand the panel.
 6. Use the preset dropdown to load example programs.
 7. Click **Edit Presets** to manage your own set of test programs.
 
-The CPU Simulator panel (⚙) allows you to step through the generated machine code instruction by instruction. It shows the program counter, registers, and memory after each step. Click on any machine code instruction to jump directly to that point.
+The CPU Simulator panel allows you to step through the generated machine code instruction by instruction. It shows the program counter, registers, and memory after each step. Click on any machine code instruction to jump directly to that point.
+
+## UI Design System
+
+Shared frontend style primitives live in `src/components/tokens.ts` under `UI`.
+
+- `UI.panelShell`, `UI.panelHeader`, `UI.panelHeaderInteractive` for consistent panel chrome
+- `UI.capsLabel10`, `UI.capsLabel9` for uppercase label typography
+- `UI.buttonPrimary`, `UI.buttonNeutral`, `UI.buttonDangerGhost` for action consistency
+- `UI.iconSlot` for icon alignment and spacing
+
+When adding new UI blocks, prefer these tokens instead of duplicating Tailwind class strings.
 
 ## Language Specification (JL)
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { ASTGraphNode } from "./components/ASTGraphNode";
-import { PHASES, BADGE_COLORS } from "./components/tokens";
+import { PHASES, BADGE_COLORS, UI } from "./components/tokens";
 import presetsData from "./presets.json";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ function CopyButton({ text, label, onToast }: { text: string; label: string; onT
     <button
       onClick={() => copyToClipboard(text, onToast)}
       title={`Copy ${label}`}
-      className="text-[9px] font-black uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 px-2 py-1 rounded transition-colors outline-none focus-visible:ring-1 focus-visible:ring-slate-300 inline-flex items-center gap-1"
+      className={`${UI.capsLabel9} ${UI.buttonNeutral} hover:text-slate-700 px-2 py-1 rounded focus-visible:ring-1 inline-flex items-center gap-1`}
     >
       <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <rect x="5" y="4" width="8" height="9" rx="1.2" />
@@ -323,18 +323,18 @@ function LangRef({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   ];
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shrink-0">
+    <div className={UI.panelShell}>
       <div
-        className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors select-none"
+        className={`${UI.panelHeader} ${UI.panelHeaderInteractive}`}
         onClick={onToggle}
         role="button" aria-expanded={open}
       >
         <div className="flex items-center gap-3">
-          <span className="text-[#A31241] w-4 flex items-center justify-center">
+          <span className={`text-[#A31241] ${UI.iconSlot}`}>
             <InfoIcon />
           </span>
-          <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">JL Language Reference</span>
-          <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">Javagar Language</span>
+          <span className={`${UI.capsLabel10} text-slate-600`}>JL Language Reference</span>
+          <span className={`${UI.capsLabel9} px-2 py-0.5 rounded-md bg-slate-100 text-slate-500`}>Javagar Language</span>
         </div>
         <Chevron open={open} />
       </div>
@@ -461,13 +461,13 @@ function PresetManager({
           <div className="flex gap-2">
             <button
               onClick={() => { onSave(local); onClose(); }}
-              className="text-[10px] font-black uppercase tracking-widest bg-[#A31241] text-white px-4 py-2 rounded-md hover:bg-[#850E34] transition-colors focus-visible:ring-2 focus-visible:ring-[#A31241]/50 outline-none"
+              className={`${UI.capsLabel10} ${UI.buttonPrimary} px-4 py-2 rounded-md`}
             >
               Save &amp; Close
             </button>
             <button
               onClick={onClose}
-              className="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 px-4 py-2 rounded-md hover:bg-slate-200 transition-colors focus-visible:ring-2 focus-visible:ring-slate-300 outline-none"
+              className={`${UI.capsLabel10} ${UI.buttonNeutral} px-4 py-2 rounded-md`}
             >
               Discard
             </button>
@@ -487,7 +487,7 @@ function PresetManager({
                   <span className="text-[11px] font-semibold text-slate-700 truncate flex-1">{p.name || "(untitled)"}</span>
                   <button
                     onClick={e => { e.stopPropagation(); removePreset(i); }}
-                    className="text-slate-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 text-xs font-black ml-1 outline-none focus-visible:opacity-100 focus-visible:text-red-400"
+                    className={`${UI.buttonDangerGhost} opacity-0 group-hover:opacity-100 text-xs font-black ml-1 focus-visible:opacity-100`}
                     aria-label={`Remove "${p.name}"`}
                   >
                     <CloseIcon className="w-3 h-3" />
@@ -524,7 +524,7 @@ function PresetManager({
                 />
                 <button
                   onClick={() => onLoad(local[selected].code)}
-                  className="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 px-3 py-1.5 rounded-md hover:bg-slate-200 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                  className={`${UI.capsLabel10} ${UI.buttonNeutral} text-slate-600 px-3 py-1.5 rounded-md`}
                 >
                   Load →
                 </button>
@@ -569,20 +569,20 @@ function PhasePanel({
   const badgeText = id === "lexical" && result ? `${result.tokens.length} tokens` : phase.sublabel;
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shrink-0">
+    <div className={UI.panelShell}>
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors select-none"
+        className={`${UI.panelHeader} ${UI.panelHeaderInteractive}`}
         onClick={onToggleCollapse}
         role="button"
         aria-expanded={!collapsed}
       >
         <div className="flex items-center gap-3">
-          <span className="text-[#A31241] w-4 flex items-center justify-center">
+          <span className={`text-[#A31241] ${UI.iconSlot}`}>
             <PhaseIcon id={phase.id} />
           </span>
-          <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{phase.label}</span>
-          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${BADGE_COLORS[phase.badge] ?? BADGE_COLORS.slate}`}>
+          <span className={`${UI.capsLabel10} text-slate-600`}>{phase.label}</span>
+          <span className={`${UI.capsLabel9} px-2 py-0.5 rounded-md ${BADGE_COLORS[phase.badge] ?? BADGE_COLORS.slate}`}>
             {badgeText}
           </span>
         </div>
@@ -1008,7 +1008,7 @@ export default function App() {
 
         <button
           onClick={() => setShowPresetManager(true)}
-          className="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 px-3 py-1.5 rounded-md hover:bg-slate-200 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+          className={`${UI.capsLabel10} ${UI.buttonNeutral} border border-slate-200 px-3 py-1.5 rounded-md`}
         >
           Edit Presets
         </button>
@@ -1032,7 +1032,7 @@ export default function App() {
         <button
           onClick={compile}
           disabled={isCompiling}
-          className="flex items-center gap-2 bg-[#A31241] hover:bg-[#850E34] active:scale-[0.97] text-white font-black py-2 px-5 rounded-md text-[11px] uppercase tracking-widest transition-all disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-[#A31241]/50"
+          className={`flex items-center gap-2 ${UI.buttonPrimary} active:scale-[0.97] font-black py-2 px-5 rounded-md text-[11px] uppercase tracking-widest transition-all disabled:opacity-50`}
           aria-label={isCompiling ? "Compiling…" : "Run compiler pipeline"}
         >
           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">

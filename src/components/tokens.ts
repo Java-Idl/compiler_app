@@ -4,7 +4,6 @@
  */
 
 export const ACCENT = "#A31241";
-export const ACCENT_HOVER = "#850E34";
 
 /** Badge color presets keyed by semantic intent */
 export const BADGE_COLORS: Record<string, string> = {
@@ -28,15 +27,3 @@ export const PHASES = [
   { id: "cpu",       icon: "⚙", label: "CPU Sim",    sublabel: "Simulator", badge: "crimson" },
 ] as const;
 
-export type PhaseId = typeof PHASES[number]["id"];
-
-/** Framer Motion stagger animation presets */
-export const staggerContainer = {
-  hidden: { opacity: 0 },
-  show:   { opacity: 1, transition: { staggerChildren: 0.04 } }
-};
-
-export const staggerItem = {
-  hidden: { opacity: 0, y: 8 },
-  show:   { opacity: 1, y: 0   }
-};

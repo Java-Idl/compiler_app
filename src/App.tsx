@@ -517,6 +517,7 @@ export default function App() {
     new Set(PHASES.map(p => p.id))
   );
   const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
+  const [langRefOpen, setLangRefOpen] = useState(false);
 
   function toggleVisible(id: string) {
     setVisiblePhases(prev => {
@@ -666,6 +667,8 @@ export default function App() {
 
         {/* ─ CENTER: Phase Panels Canvas ─ */}
         <main className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col gap-3">
+          <LangRef open={langRefOpen} onToggle={() => setLangRefOpen(v => !v)} />
+
           {/* Compile error banner */}
           {compileError && (
             <div className="border-l-4 border-red-400 bg-red-50 px-5 py-4 rounded-r-xl border border-red-200" role="alert">

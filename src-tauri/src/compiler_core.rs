@@ -132,7 +132,8 @@ impl Parser {
                 Ok(ASTNode::Print { expr: Box::new(expr) })
             }
             Token::Ident(_) => {
-                let name = if let Token::Ident(n) = self.consume() { n } else { unreachable!() };
+                let name = if let Token::Ident(n) = self.consume() { n }
+                    else { return Err("Syntax Error: Expected identifier at assignment start.".into()); };
                 if !matches!(self.consume(), Token::Assign) {
                     return Err(format!("Syntax Error: Expected '=' after '{}'.", name));
                 }
@@ -152,7 +153,7 @@ impl Parser {
             let op = match self.consume() {
                 Token::Plus  => "+".to_string(),
                 Token::Minus => "-".to_string(),
-                _ => unreachable!()
+                t => return Err(format!("Syntax Error: Unexpected token {:?} in additive expression.", t)),
             };
             let right = self.parse_multiplicative()?;
             left = ASTNode::BinaryOp { op, left: Box::new(left), right: Box::new(right) };
@@ -167,7 +168,7 @@ impl Parser {
                 Token::Star    => "*".to_string(),
                 Token::Slash   => "/".to_string(),
                 Token::Percent | Token::KwMod => "%".to_string(),
-                _ => unreachable!()
+                t => return Err(format!("Syntax Error: Unexpected token {:?} in multiplicative expression.", t)),
             };
             let right = self.parse_unary()?;
             left = ASTNode::BinaryOp { op, left: Box::new(left), right: Box::new(right) };

@@ -29,6 +29,7 @@ interface PipelineResult {
   tac: Array<{ result: string; arg1: string; op?: string; arg2?: string }>;
   optimized_tac: Array<{ result: string; arg1: string; op?: string; arg2?: string }>;
   machine_code: Array<{ opcode: string; instruction: string; binary: string; cpu_state: CpuState }>;
+  assignments: Record<string, number>;
   error?: string | null;
 }
 
@@ -460,23 +461,60 @@ function PhasePanel({
 
               {/* ⑥ Machine Code */}
               {id === "machine" && (
-                <div className="divide-y divide-slate-100">
-                  {result.machine_code.map((m, i) => (
-                    <div
-                      key={i}
-                      onClick={() => onMachineRowClick(i)}
-                      className={`flex items-center gap-5 px-4 py-2.5 font-mono cursor-pointer transition-all border-l-2 ${
-                        pc === i ? "bg-red-50 border-[#A31241]" : "hover:bg-slate-50 border-transparent"
-                      }`}
-                    >
-                      <span className={`text-[10px] font-black w-10 ${pc === i ? "text-[#A31241]" : "text-slate-300"}`}>
-                        0x{i.toString(16).padStart(2, "0").toUpperCase()}
-                      </span>
-                      <span className={`font-black text-[11px] w-12 ${pc === i ? "text-slate-900" : "text-slate-500"}`}>{m.opcode}</span>
-                      <span className="text-slate-400 text-[11px] flex-1 truncate">{m.instruction.replace(m.opcode, "").trim()}</span>
-                      <span className={`text-[10px] tracking-widest font-mono ${pc === i ? "text-[#A31241]" : "text-slate-300"}`}>{m.binary}</span>
+                <div className="p-4 flex flex-col gap-4">
+                  {/* Compiler Assignments Table */}
+                  <div>
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Compiler Symbol Table</p>
+                    <div className="rounded-lg border border-slate-200 overflow-hidden">
+                      <div className="bg-slate-50 border-b border-slate-200 grid grid-cols-2 gap-0">
+                        <div className="px-4 py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest border-r border-slate-200">
+                          Variable
+                        </div>
+                        <div className="px-4 py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                          Assigned Value
+                        </div>
+                      </div>
+                      {Object.entries(result.assignments).length > 0 ? (
+                        Object.entries(result.assignments).map(([name, value]) => (
+                          <div key={name} className="grid grid-cols-2 gap-0 border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                            <div className="px-4 py-2 text-[11px] font-mono font-bold text-amber-700 border-r border-slate-100">
+                              {name}
+                            </div>
+                            <div className="px-4 py-2 text-[11px] font-mono text-slate-600">
+                              {value} &nbsp;<span className="text-slate-400">(0x{value.toString(16).padStart(2, "0").toUpperCase()})</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-[11px] text-slate-400 text-center border-t border-slate-100">
+                          —
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Machine Code Instructions */}
+                  <div>
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Machine Code Instructions</p>
+                    <div className="divide-y divide-slate-100">
+                      {result.machine_code.map((m, i) => (
+                        <div
+                          key={i}
+                          onClick={() => onMachineRowClick(i)}
+                          className={`flex items-center gap-5 px-4 py-2.5 font-mono cursor-pointer transition-all border-l-2 ${
+                            pc === i ? "bg-red-50 border-[#A31241]" : "hover:bg-slate-50 border-transparent"
+                          }`}
+                        >
+                          <span className={`text-[10px] font-black w-10 ${pc === i ? "text-[#A31241]" : "text-slate-300"}`}>
+                            0x{i.toString(16).padStart(2, "0").toUpperCase()}
+                          </span>
+                          <span className={`font-black text-[11px] w-12 ${pc === i ? "text-slate-900" : "text-slate-500"}`}>{m.opcode}</span>
+                          <span className="text-slate-400 text-[11px] flex-1 truncate">{m.instruction.replace(m.opcode, "").trim()}</span>
+                          <span className={`text-[10px] tracking-widest font-mono ${pc === i ? "text-[#A31241]" : "text-slate-300"}`}>{m.binary}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 

@@ -150,7 +150,7 @@ fn compile_pipeline(code: &str) -> Result<PipelineResult, String> {
     let mut tac_gen = TACGenerator::new();
     tac_gen.generate(&ast);
     let optimized_tac = optimize_code(&tac_gen.instructions);
-    let (machine_code, mut assignments_map) = generate_machine_code(&tac_gen.instructions);
+    let (machine_code, assignments_map) = generate_machine_code(&tac_gen.instructions);
     let assignments: std::collections::BTreeMap<String, i32> = assignments_map.into_iter().collect();
 
     Ok(PipelineResult {

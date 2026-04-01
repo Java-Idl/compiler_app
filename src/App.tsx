@@ -76,14 +76,58 @@ function Toast({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
     error: "text-red-700",
   }[toast.type];
 
+  const iconColor = {
+    success: "text-emerald-600",
+    info: "text-blue-600",
+    warning: "text-amber-600",
+    error: "text-red-600",
+  }[toast.type];
+
+  const getIcon = () => {
+    switch (toast.type) {
+      case "success":
+        return (
+          <svg className={`w-4 h-4 ${iconColor}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="13.78 4.22a.75.75 0 0 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06L7.5 10.94z" />
+          </svg>
+        );
+      case "error":
+        return (
+          <svg className={`w-4 h-4 ${iconColor}`} viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="8" y1="4" x2="8" y2="9" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="8" cy="12" r="0.5" fill="currentColor" />
+          </svg>
+        );
+      case "warning":
+        return (
+          <svg className={`w-4 h-4 ${iconColor}`} viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1L1 14h14L8 1z" fill="none" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="8" y1="5" x2="8" y2="10" stroke="currentColor" strokeWidth="1.2" />
+            <circle cx="8" cy="12" r="0.4" fill="currentColor" />
+          </svg>
+        );
+      case "info":
+      default:
+        return (
+          <svg className={`w-4 h-4 ${iconColor}`} viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="8" cy="5" r="0.4" fill="currentColor" />
+            <line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" strokeWidth="1.2" />
+          </svg>
+        );
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className={`fixed top-4 right-4 border rounded-lg px-4 py-2 text-[11px] font-black uppercase tracking-widest z-50 ${bgColor} ${textColor}`}
+      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+      className={`border rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest ${bgColor} ${textColor} flex items-center gap-2 min-w-max pointer-events-auto shadow-sm`}
     >
-      {toast.message}
+      {getIcon()}
+      <span>{toast.message}</span>
     </motion.div>
   );
 }
@@ -796,7 +840,7 @@ export default function App() {
       setCompileError(res.error ?? null);
       setPc(0);
       if (!res.error) {
-        showToast("Compilation successful ✓", "success");
+        showToast("Compilation successful", "success");
       }
     } catch (e: unknown) {
       setCompileError(e instanceof Error ? e.message : String(e));
@@ -815,7 +859,7 @@ export default function App() {
 
       {/* ── TOAST NOTIFICATIONS ─────────────────────────────────────────── */}
       <AnimatePresence initial={false}>
-        <div className="fixed bottom-4 right-4 flex flex-col gap-2 pointer-events-none z-50">
+        <div className="fixed bottom-4 left-4 flex flex-col gap-2 pointer-events-auto z-50">
           {toasts.map((toast, idx) => (
             <motion.div
               key={toast.id}

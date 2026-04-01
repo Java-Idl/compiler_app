@@ -88,6 +88,20 @@ Shared frontend style primitives live in `src/components/tokens.ts` under `UI`.
 
 When adding new UI blocks, prefer these tokens instead of duplicating Tailwind class strings.
 
+### Reusable Functionality Modules
+
+Shared non-visual frontend behavior is extracted into dedicated modules:
+
+- `src/components/ToastStack.tsx`
+  - `useToastQueue()` for toast state management (`toasts`, `showToast`, `removeToast`)
+  - `ToastStack` for rendering and auto-dismiss behavior
+- `src/components/compilerFormatters.ts`
+  - `formatTacText()` for TAC export text
+  - `formatAssignmentsText()` for symbol table export text
+  - `formatMachineCodeText()` for machine instruction export text
+
+When adding copy/export features or notifications, use these modules instead of duplicating mapping and queue logic in page components.
+
 ## Language Specification (JL)
 
 JL is a small language designed for teaching compiler concepts. It supports integer arithmetic, variables, and a few built-in functions.

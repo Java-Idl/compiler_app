@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Hello, JL",
+    "code": "// Javagar Language — first program\nlet x = 42;\nprint x;"
+  },
+  {
+    "name": "Algebraic Tracing",
+    "code": "// Classic offset + scale\nlet origin = 0;\nlet offset = 250;\nlet target = origin + offset;\nlet final = target * 2;"
+  },
+  {
+    "name": "Constant Folding Demo",
+    "code": "// All constants — optimizer should fold to literals\nlet base = 100;\nlet multiplier = 5;\nlet result = base * multiplier;\nprint result;"
+  },
+  {
+    "name": "All Four Operators",
+    "code": "// Tests ADD / SUB / MUL / DIV opcodes\nlet x = 20;\nlet y = 4;\nlet a = x + y;\nlet b = x - y;\nlet c = x * y;\nlet d = x / y;\nprint d;"
+  },
+  {
+    "name": "Modulo Operator",
+    "code": "// MOD opcode test — cycle counter / bucket assignment\nlet items = 17;\nlet buckets = 5;\nlet bucket_id = items mod buckets;\nprint bucket_id;"
+  },
+  {
+    "name": "Built-in: abs()",
+    "code": "// ABS opcode — absolute value of a negative number\nlet temperature = neg 15;\nlet magnitude = abs(temperature);\nprint magnitude;"
+  },
+  {
+    "name": "Built-in: sq()",
+    "code": "// SQ opcode — square of a number\nlet side = 7;\nlet area = sq(side);\nprint area;"
+  },
+  {
+    "name": "Unary neg",
+    "code": "// NEG opcode — negate a variable\nlet profit = 200;\nlet loss = neg profit;\nlet net = profit + loss;\nprint net;"
+  },
+  {
+    "name": "Chain Assignment",
+    "code": "// Sequential dependency chain — tests copy propagation\nlet a = 1;\nlet b = a + 2;\nlet c = b + 3;\nlet d = c + 4;\nlet result = d * 2;\nprint result;"
+  },
+  {
+    "name": "Temperature Conversion",
+    "code": "// Celsius to Fahrenheit: F = (C * 9 / 5) + 32\nlet celsius = 25;\nlet scaled = celsius * 9;\nlet divided = scaled / 5;\nlet fahrenheit = divided + 32;\nprint fahrenheit;"
+  },
+  {
+    "name": "Score Calculation",
+    "code": "// kills * bonus - penalty\nlet kills = 15;\nlet bonus = 10;\nlet penalty = 25;\nlet raw = kills * bonus;\nlet score = raw - penalty;\nprint score;"
+  },
+  {
+    "name": "Bit Shift Simulation",
+    "code": "// Multiply by 2 simulates logical left shift\nlet byte = 1;\nlet sh1 = byte * 2;\nlet sh2 = sh1 * 2;\nlet sh3 = sh2 * 2;\nlet sh4 = sh3 * 2;\nprint sh4;"
+  },
+  {
+    "name": "Compound Built-ins",
+    "code": "// Combining abs and sq\nlet raw = neg 6;\nlet a = abs(raw);\nlet squared = sq(a);\nprint squared;"
+  },
+  {
+    "name": "Semantic Violation",
+    "code": "// ERROR: 'x' used before assignment\nlet valid = 10;\nlet crash = valid + x;"
+  },
+  {
+    "name": "Syntax Failure",
+    "code": "// ERROR: malformed expression\nlet data = 5 ++ 2;"
+  },
+  {
+    "name": "Division by Zero",
+    "code": "// Edge case: compiler emits MOD 0 → result is 0\nlet numerator = 100;\nlet divisor = 0;\nlet result = numerator / divisor;\nprint result;"
+  }
+]

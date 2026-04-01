@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-panel: #f8fafc;
+  --color-primary: #0f172a;
+  --color-secondary: #64748b;
+  --color-accent: #A31241;
+
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-primary m-0 p-0 font-sans;
+    min-height: 100vh;
+  }
+}
+
+/* Light Mode Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* CSS Graphical Parse Tree — Light Theme */
+.css-tree ul {
+  padding-top: 24px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0;
+  padding-left: 0;
+}
+
+.css-tree li {
+  float: left;
+  text-align: center;
+  list-style-type: none;
+  position: relative;
+  padding: 24px 8px 0 8px;
+}
+
+/* Connector lines — horizontal bar across siblings */
+.css-tree li::before, .css-tree li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 2px solid #cbd5e1;
+  width: 50%;
+  height: 24px;
+}
+.css-tree li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2px solid #cbd5e1;
+}
+
+.css-tree li:only-child::after, .css-tree li:only-child::before { display: none; }
+.css-tree li:only-child { padding-top: 0; }
+.css-tree li:first-child::before, .css-tree li:last-child::after { border: 0 none; }
+.css-tree li:last-child::before { border-right: 2px solid #cbd5e1; border-radius: 0 4px 0 0; }
+.css-tree li:first-child::after { border-radius: 4px 0 0 0; }
+
+/* Vertical stem from parent down to the horizontal bar */
+.css-tree ul ul::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 2px solid #cbd5e1;
+  width: 0;
+  height: 24px;
+  transform: translateX(-50%);
+}
+
+/* Node boxes — transparent background so Tailwind classes on the element take priority */
+.css-tree .node-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+}
+.css-tree .node-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}

@@ -1,0 +1,6 @@
+{
+    "LOAD": { "opcode": "00", "type": "REG_VAL" },
+    "ADD": { "opcode": "01", "type": "REG_REG" },
+    "STORE": { "opcode": "10", "type": "REG_ADDR" },
+    "MUL": { "opcode": "11", "type": "REG_REG" }
+}

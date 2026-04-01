@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 export type ToastType = "success" | "info" | "warning" | "error";
 
@@ -25,6 +25,8 @@ export function useToastQueue() {
 }
 
 function ToastCard({ toast, onRemove }: { toast: ToastItem; onRemove: () => void }) {
+  const reduceMotion = useReducedMotion();
+
   useEffect(() => {
     const timer = setTimeout(onRemove, 3000);
     return () => clearTimeout(timer);
@@ -89,9 +91,9 @@ function ToastCard({ toast, onRemove }: { toast: ToastItem; onRemove: () => void
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.95 }}
+      animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.95 }}
       className={`border rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest ${bgColor} ${textColor} flex items-center gap-2 min-w-max pointer-events-auto shadow-sm`}
     >
       {getIcon()}
@@ -101,6 +103,8 @@ function ToastCard({ toast, onRemove }: { toast: ToastItem; onRemove: () => void
 }
 
 export function ToastStack({ toasts, onRemove }: { toasts: ToastItem[]; onRemove: (id: string) => void }) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <AnimatePresence initial={false}>
       <div className="fixed bottom-4 left-4 flex flex-col gap-2 pointer-events-auto z-50">
@@ -108,10 +112,10 @@ export function ToastStack({ toasts, onRemove }: { toasts: ToastItem[]; onRemove
           <motion.div
             key={toast.id}
             layout
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.95 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
             <ToastCard toast={toast} onRemove={() => onRemove(toast.id)} />
           </motion.div>

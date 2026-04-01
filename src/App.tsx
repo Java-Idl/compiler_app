@@ -731,7 +731,7 @@ function PhasePanel({
                       ) : (
                         <button
                           onClick={onStepCPU}
-                          className="px-4 py-2 bg-[#A31241] hover:bg-[#850E34] active:scale-95 text-white text-[10px] font-black uppercase tracking-widest rounded-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#A31241]/50"
+                          className="px-4 py-2 bg-[#A31241] hover:bg-[#850E34] active:scale-95 text-white text-[10px] font-black uppercase tracking-widest rounded-md transition-transform outline-none focus-visible:ring-2 focus-visible:ring-[#A31241]/50"
                         >
                           Step →
                         </button>
@@ -919,7 +919,7 @@ export default function App() {
         <button
           onClick={compile}
           disabled={isCompiling}
-          className={`flex items-center gap-2 ${UI.buttonPrimary} active:scale-[0.97] font-black py-2 px-5 rounded-md text-[11px] uppercase tracking-widest transition-all disabled:opacity-50`}
+          className={`flex items-center gap-2 ${UI.buttonPrimary} active:scale-[0.97] font-black py-2 px-5 rounded-md text-[11px] uppercase tracking-widest transition-transform disabled:opacity-50`}
           aria-label={isCompiling ? "Compiling…" : "Run compiler pipeline"}
         >
           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -988,7 +988,7 @@ export default function App() {
                 aria-label={`${visible ? "Hide" : "Show"} ${p.label}`}
                 aria-pressed={visible}
                 onClick={() => toggleVisible(p.id)}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
+                className={`w-11 h-11 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-sm font-black transition-colors duration-200 ease-out outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
                   visible
                     ? "bg-[#A31241] text-white shadow-sm shadow-[#A31241]/20 focus-visible:ring-[#A31241]/50"
                     : "bg-slate-100 text-slate-400 hover:bg-slate-200 focus-visible:ring-slate-300"

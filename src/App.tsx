@@ -8,8 +8,22 @@ import presetsData from "./presets.json";
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Preset { name: string; code: string; }
 
+interface TokenClassSummary {
+  count: number;
+  items: string[];
+}
+
+interface LexicalSummary {
+  keywords: TokenClassSummary;
+  identifiers: TokenClassSummary;
+  numbers: TokenClassSummary;
+  operators: TokenClassSummary;
+  symbols: TokenClassSummary;
+}
+
 interface PipelineResult {
   tokens: string[];
+  lexical_summary: LexicalSummary;
   ast: any[];
   semantic: string[];
   tac: Array<{ result: string; arg1: string; op?: string; arg2?: string }>;
@@ -36,6 +50,13 @@ const Chevron = ({ open }: { open: boolean }) => (
 
 // ─── JL Language Reference Panel ─────────────────────────────────────────────
 function LangRef({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const OVERVIEW = [
+    "Every statement must end with ';'.",
+    "Use 'let' for declaration and '=' for reassignment.",
+    "Single-line comments start with '//'.",
+    "Only i32 integer arithmetic is supported.",
+  ];
+
   const KEYWORDS = [
     { kw: "let x = expr;",    desc: "Declare and assign a variable" },
     { kw: "x = expr;",        desc: "Reassign existing variable" },
@@ -88,7 +109,20 @@ function LangRef({ open, onToggle }: { open: boolean; onToggle: () => void }) {
       </div>
 
       {open && (
-        <div className="p-5 grid grid-cols-3 gap-6 text-[11px]">
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-[11px]">
+          {/* Language at a glance */}
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3">Language at a Glance</p>
+            <ul className="space-y-2">
+              {OVERVIEW.map(item => (
+                <li key={item} className="text-[10px] text-slate-500 leading-snug flex gap-2">
+                  <span className="text-[#A31241] font-black">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Keywords */}
           <div>
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3">Syntax</p>
@@ -350,13 +384,36 @@ function PhasePanel({
             <div>
               {/* ① Lexical */}
               {id === "lexical" && (
-                <div className="p-4 grid grid-cols-4 gap-2">
-                  {result.tokens.map((tok, i) => (
-                    <div key={i} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 hover:border-slate-300 transition-colors">
-                      <span className="text-[9px] text-slate-400 font-bold block tracking-widest uppercase">T{i}</span>
-                      <span className="font-mono text-[11px] text-slate-700 font-semibold truncate block mt-0.5">{tok}</span>
+                <div className="p-4 flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-2">
+                    {[
+                      { label: "Keywords", bucket: result.lexical_summary.keywords },
+                      { label: "Identifiers", bucket: result.lexical_summary.identifiers },
+                      { label: "Numbers", bucket: result.lexical_summary.numbers },
+                      { label: "Operators", bucket: result.lexical_summary.operators },
+                      { label: "Symbols", bucket: result.lexical_summary.symbols },
+                    ].map(({ label, bucket }) => (
+                      <div key={label} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{label}</p>
+                        <p className="text-[16px] leading-none mt-1 text-slate-800 font-black">{bucket.count}</p>
+                        <p className="font-mono text-[10px] text-slate-500 mt-1.5 truncate">
+                          {bucket.items.length > 0 ? bucket.items.join(", ") : "-"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-2">Token Stream</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {result.tokens.map((tok, i) => (
+                        <div key={i} className="bg-white border border-slate-200 rounded-lg px-3 py-2 hover:border-slate-300 transition-colors">
+                          <span className="text-[9px] text-slate-400 font-bold block tracking-widest uppercase">T{i}</span>
+                          <span className="font-mono text-[11px] text-slate-700 font-semibold truncate block mt-0.5">{tok}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               )}
 
@@ -517,7 +574,7 @@ export default function App() {
     new Set(PHASES.map(p => p.id))
   );
   const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
-  const [langRefOpen, setLangRefOpen] = useState(false);
+  const [langRefOpen, setLangRefOpen] = useState(true);
 
   function toggleVisible(id: string) {
     setVisiblePhases(prev => {

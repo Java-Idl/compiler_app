@@ -442,9 +442,10 @@ pub struct CpuState {
     pub memory:    HashMap<String, i32>,
 }
 
-pub fn generate_machine_code(tac: &[TACInstruction]) -> Vec<MachineInstruction> {
+pub fn generate_machine_code(tac: &[TACInstruction]) -> (Vec<MachineInstruction>, HashMap<String, i32>) {
     let mut out = Vec::new();
     let mut cpu = CpuState::default();
+    let mut assignments: HashMap<String, i32> = HashMap::new();
 
     for (idx, t) in tac.iter().enumerate() {
         let v1 = t.arg1.parse::<i32>()
@@ -475,6 +476,10 @@ pub fn generate_machine_code(tac: &[TACInstruction]) -> Vec<MachineInstruction> 
 
         if mnemonic != "OUT" {
             cpu.memory.insert(t.result.clone(), result_val);
+            // Track non-temporary variable assignments
+            if !t.result.starts_with('_') {
+                assignments.insert(t.result.clone(), result_val);
+            }
         }
         cpu.pc = idx + 1;
 
@@ -504,5 +509,5 @@ pub fn generate_machine_code(tac: &[TACInstruction]) -> Vec<MachineInstruction> 
             cpu_state: cpu.clone(),
         });
     }
-    out
+    (out, assignments)
 }

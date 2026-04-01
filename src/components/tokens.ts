@@ -18,12 +18,12 @@ export const BADGE_COLORS: Record<string, string> = {
 
 /** Phase navigator sidebar config */
 export const PHASES = [
-  { id: "lexical",   icon: "①", label: "Lexical",    sublabel: "Tokens",    badge: "amber"   },
-  { id: "syntax",    icon: "②", label: "Syntax AST", sublabel: "Graph",     badge: "indigo"  },
-  { id: "semantic",  icon: "③", label: "Semantic",   sublabel: "Symbols",   badge: "amber"   },
-  { id: "tac",       icon: "④", label: "TAC",        sublabel: "IR",        badge: "slate"   },
-  { id: "optimized", icon: "⑤", label: "Optimized",  sublabel: "Folded",    badge: "emerald" },
-  { id: "machine",   icon: "⑥", label: "Code Gen",   sublabel: "16-bit",    badge: "violet"  },
-  { id: "cpu",       icon: "⚙", label: "CPU Sim",    sublabel: "Simulator", badge: "crimson" },
+  { id: "lexical",   icon: "L", label: "Lexical",    sublabel: "Tokens",    badge: "amber"   },
+  { id: "syntax",    icon: "S", label: "Syntax AST", sublabel: "Graph",     badge: "indigo"  },
+  { id: "semantic",  icon: "M", label: "Semantic",   sublabel: "Symbols",   badge: "amber"   },
+  { id: "tac",       icon: "T", label: "TAC",        sublabel: "IR",        badge: "slate"   },
+  { id: "optimized", icon: "O", label: "Optimized",  sublabel: "Folded",    badge: "emerald" },
+  { id: "machine",   icon: "G", label: "Code Gen",   sublabel: "16-bit",    badge: "violet"  },
+  { id: "cpu",       icon: "C", label: "CPU Sim",    sublabel: "Simulator", badge: "crimson" },
 ] as const;
 

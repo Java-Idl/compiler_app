@@ -138,9 +138,13 @@ function CopyButton({ text, label, onToast }: { text: string; label: string; onT
     <button
       onClick={() => copyToClipboard(text, onToast)}
       title={`Copy ${label}`}
-      className="text-[9px] font-black uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 px-2 py-1 rounded transition-colors outline-none focus-visible:ring-1 focus-visible:ring-slate-300"
+      className="text-[9px] font-black uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 px-2 py-1 rounded transition-colors outline-none focus-visible:ring-1 focus-visible:ring-slate-300 inline-flex items-center gap-1"
     >
-      📋 Copy
+      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <rect x="5" y="4" width="8" height="9" rx="1.2" />
+        <path d="M3 11V3.8C3 3.35 3.35 3 3.8 3H10" />
+      </svg>
+      <span>Copy</span>
     </button>
   );
 }
@@ -180,6 +184,96 @@ const Chevron = ({ open }: { open: boolean }) => (
     fill="currentColor" viewBox="0 0 8 8"
   >
     <path d="M2 1l4 3-4 3V1z" />
+  </svg>
+);
+
+const CloseIcon = ({ className = "w-3 h-3" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+    <path d="M3.5 3.5l9 9" />
+    <path d="M12.5 3.5l-9 9" />
+  </svg>
+);
+
+const InfoIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <circle cx="8" cy="8" r="6.25" />
+    <circle cx="8" cy="5" r="0.65" fill="currentColor" stroke="none" />
+    <path d="M8 7.2v4" />
+  </svg>
+);
+
+const PhaseIcon = ({ id, className = "w-3.5 h-3.5" }: { id: (typeof PHASES)[number]["id"]; className?: string }) => {
+  if (id === "lexical") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <path d="M3 3h10" />
+        <path d="M3 6.5h7" />
+        <path d="M3 10h10" />
+        <path d="M3 13h6" />
+      </svg>
+    );
+  }
+  if (id === "syntax") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+        <circle cx="8" cy="3" r="1.4" />
+        <circle cx="4" cy="8" r="1.4" />
+        <circle cx="12" cy="8" r="1.4" />
+        <circle cx="8" cy="13" r="1.4" />
+        <path d="M8 4.4V6.6M5.2 8h5.6M8 9.4v2.2" />
+      </svg>
+    );
+  }
+  if (id === "semantic") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+        <path d="M3 3h4v4H3z" />
+        <path d="M9 3h4v4H9z" />
+        <path d="M6 11h4" />
+        <path d="M8 7v4" />
+      </svg>
+    );
+  }
+  if (id === "tac") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <path d="M3 4h10" />
+        <path d="M3 8h6" />
+        <path d="M3 12h8" />
+      </svg>
+    );
+  }
+  if (id === "optimized") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <path d="M3 8h10" />
+        <path d="M9.5 4.5L13 8l-3.5 3.5" />
+      </svg>
+    );
+  }
+  if (id === "machine") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <rect x="2.5" y="3" width="11" height="10" rx="1.5" />
+        <path d="M5 6.2h1.8M9.2 6.2H11" />
+        <path d="M5 9.8h1.8M9.2 9.8H11" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+      <circle cx="8" cy="8" r="2.4" />
+      <path d="M8 2.2v2M8 11.8v2M2.2 8h2M11.8 8h2M3.9 3.9l1.4 1.4M10.7 10.7l1.4 1.4M12.1 3.9l-1.4 1.4M5.3 10.7l-1.4 1.4" />
+    </svg>
+  );
+};
+
+const PipelineIcon = ({ className = "w-10 h-10" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+    <rect x="3.5" y="4" width="4.5" height="4.5" rx="1" />
+    <rect x="9.75" y="9.75" width="4.5" height="4.5" rx="1" />
+    <rect x="16" y="15.5" width="4.5" height="4.5" rx="1" />
+    <path d="M8 6.25h2.2M12 8.45v1.3M14.25 12h1.75M18.25 14.25v1.25" />
   </svg>
 );
 
@@ -236,7 +330,9 @@ function LangRef({ open, onToggle }: { open: boolean; onToggle: () => void }) {
         role="button" aria-expanded={open}
       >
         <div className="flex items-center gap-3">
-          <span className="text-[#A31241] font-black text-[10px] w-4 text-center">ℹ</span>
+          <span className="text-[#A31241] w-4 flex items-center justify-center">
+            <InfoIcon />
+          </span>
           <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">JL Language Reference</span>
           <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">Javagar Language</span>
         </div>
@@ -251,7 +347,7 @@ function LangRef({ open, onToggle }: { open: boolean; onToggle: () => void }) {
             <ul className="space-y-2">
               {OVERVIEW.map(item => (
                 <li key={item} className="text-[10px] text-slate-500 leading-snug flex gap-2">
-                  <span className="text-[#A31241] font-black">•</span>
+                  <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-[#A31241] shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -394,7 +490,7 @@ function PresetManager({
                     className="text-slate-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 text-xs font-black ml-1 outline-none focus-visible:opacity-100 focus-visible:text-red-400"
                     aria-label={`Remove "${p.name}"`}
                   >
-                    ✕
+                    <CloseIcon className="w-3 h-3" />
                   </button>
                 </div>
               ))}
@@ -482,7 +578,9 @@ function PhasePanel({
         aria-expanded={!collapsed}
       >
         <div className="flex items-center gap-3">
-          <span className="text-[#A31241] font-black text-[10px] w-4 text-center">{phase.icon}</span>
+          <span className="text-[#A31241] w-4 flex items-center justify-center">
+            <PhaseIcon id={phase.id} />
+          </span>
           <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{phase.label}</span>
           <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${BADGE_COLORS[phase.badge] ?? BADGE_COLORS.slate}`}>
             {badgeText}
@@ -495,7 +593,7 @@ function PhasePanel({
             title={`Hide ${phase.label} panel`}
             aria-label={`Hide ${phase.label} panel`}
           >
-            ✕
+            <CloseIcon className="w-3 h-3" />
           </button>
           <Chevron open={!collapsed} />
         </div>
@@ -1009,7 +1107,7 @@ export default function App() {
                     : "bg-slate-100 text-slate-400 hover:bg-slate-200 focus-visible:ring-slate-300"
                 }`}
               >
-                {p.icon}
+                <PhaseIcon id={p.id} className="w-3.5 h-3.5" />
               </button>
             );
           })}
@@ -1030,7 +1128,9 @@ export default function App() {
           {/* Ambient empty state — only when nothing has run yet */}
           {!result && !compileError && !isCompiling && visibleList.length > 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="text-4xl text-slate-200 mb-3 select-none" aria-hidden="true">⟁</div>
+              <div className="text-slate-300 mb-3 select-none" aria-hidden="true">
+                <PipelineIcon />
+              </div>
               <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Pipeline ready</p>
               <p className="text-[11px] text-slate-300 mt-1.5">Write code in the editor, then click <strong className="font-black">Run Pipeline</strong>.</p>
             </div>
